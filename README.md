@@ -30,9 +30,9 @@ Set-Location -LiteralPath 'C:\Users\G\Desktop\P\master1\TRPG\shareable-web'
 | 页面结构、内容与视觉方向 | 待确认 |
 | 技术栈与托管方案 | 待选型 |
 | 本地 Git 仓库 | 已初始化，默认分支 `main`，根目录为本目录 |
-| GitHub 项目仓库与 Issue | 远端待创建；目标为账号 `AzurAqua` 下的私有仓库 `shareable-web` |
+| GitHub 项目仓库与 Issue | [私有仓库](https://github.com/AzurAqua/shareable-web) 已创建并同步；[进度 Issue #1](https://github.com/AzurAqua/shareable-web/issues/1) 已建立 |
 | 仓库验证命令 | 已配置 `python scripts/verify.py`；见下文 |
-| GitHub Actions | 工作流已编写，远端执行待接入后验收 |
+| GitHub Actions | 已接入推送、PR 和手动触发；[首次线上检查通过](https://github.com/AzurAqua/shareable-web/actions/runs/41639492388) |
 | 部署、访问权限与正式链接 | 未配置 |
 
 ## 命令与配置
@@ -64,12 +64,19 @@ python scripts/verify.py
 git commit -m 'Describe the completed change'
 ```
 
-远端创建并完成认证后，推送使用 `git push -u origin main`；后续已有上游分支时使用 `git push`。远端尚未接通时，本地提交不代表已经同步到 GitHub。
+远端 `origin` 为 `https://github.com/AzurAqua/shareable-web.git`，本地 `main` 已跟踪 `origin/main`。完成本地提交后使用 `git push` 同步；本地提交、远端推送和网站发布分别记录。
 
-任务使用 GitHub Issue 的“项目任务”模板，记录目标、验收条件、实际结果和阻塞；有 PR 时按模板填写变化、验证和交付事项。
+GitHub CLI 已通过官方浏览器流程授权。CLI 配置位于本项目的 `.git/gh`，Git 凭据辅助程序只在本仓库内配置；无需修改全局 Git 配置。Git 会自动使用项目认证路径。若在新终端直接使用 `gh`，先执行：
+
+```powershell
+$env:GH_CONFIG_DIR = Join-Path (Get-Location).Path '.git\gh'
+gh repo view AzurAqua/shareable-web
+```
+
+任务使用 GitHub Issue 的“项目任务”模板，记录目标、验收条件、实际结果和阻塞；有 PR 时按模板填写变化、验证和交付事项。[进度 Issue #1](https://github.com/AzurAqua/shareable-web/issues/1) 跟踪整体准备与第一版交付。
 
 `Repository checks` 工作流在推送、PR 和手动触发时运行与本地相同的 `scripts/verify.py`。当前仅验证仓库根目录、存在已纳入版本控制的文件，并检查这些文件的工作区内容是否存在 Git 可检测的空白格式错误；新增文件须先暂存。应用构建和功能测试会在开发阶段加入。
 
 ## 下一步
 
-按 [PLAN.md](PLAN.md) 推进：先完成 GitHub 基础连接与同步，再确认需求和分享约束，确定设计、技术与托管，并补齐应用验证和部署验收。
+GitHub 基础已接通。后续按 [PLAN.md](PLAN.md) 确认需求和分享约束，确定设计、技术与托管，并补齐应用验证和部署验收。
