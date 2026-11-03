@@ -1,4 +1,4 @@
-# 可分享网页项目准备计划
+# 伦理委员会（Ethics Committee）项目准备计划
 
 ## 目标与边界
 
@@ -10,7 +10,7 @@
 
 ## 已完成事项
 
-- [x] 确定独立项目目录为 `C:\Users\G\Desktop\P\master1\TRPG\shareable-web`。
+- [x] 确定独立项目目录为 `C:\Users\G\Desktop\P\master1\TRPG\伦理委员会`。
 - [x] 创建仅作用于本项目及子目录的 `AGENTS.md`，保留已有数学公式格式约定。
 - [x] 创建记录真实准备状态、使用入口和未配置命令的 `README.md`。
 - [x] 将完整准备计划、默认选择和后续事项记录在本文件。
@@ -73,7 +73,7 @@
 
 ## 默认选择
 
-- 项目名称暂用 `shareable-web`，不预先确定网页主题。
+- 项目名称为“伦理委员会”，英文名称为 Ethics Committee；本地文件夹使用 `伦理委员会`，GitHub 仓库标识使用 `ethics-committee`。名称之外的业务需求仍待确认。
 - Git 仓库以本目录为根，GitHub 仓库为私有；网站访问权限单独确认。
 - 优先采用低成本方案和托管平台提供的域名，不擅自购买服务。
 - 登录、数据库、多人协作和监控按实际需求加入，需求明确后再确定框架和托管平台。
@@ -97,24 +97,35 @@
 - [x] 添加任务 Issue 表单和 PR 模板，要求记录验收条件及实际验证结果。
 - [x] 编写 `scripts/verify.py` 和 GitHub Actions 工作流，共用仓库检查入口。
 - [x] 执行本地检查、审阅暂存内容并创建初始提交。
-- [x] 创建并验收 `AzurAqua/shareable-web` 私有远端，推送本地提交。
+- [x] 创建并验收项目私有远端（现名 `AzurAqua/ethics-committee`），推送本地提交。
 - [x] 创建初始进度 Issue，确认 GitHub Actions 实际运行结果并记录链接。
 
 用户已自行完成 GitHub 网页登录及 GitHub CLI 官方设备授权。CLI 配置限定在本项目的 `.git/gh`，Git 凭据辅助程序只写入本仓库，已有全局 Git 配置保持原样。后续 Git 同步无需依赖当前终端的临时 `GH_CONFIG_DIR` 设置；直接使用 CLI 时按 README 初始化该进程环境变量。
 
 实际结果与证据：
 
-- [私有仓库](https://github.com/AzurAqua/shareable-web) 已创建，默认分支 `main`；`origin` 已连接，本地 `main` 跟踪 `origin/main`。
-- [初始提交 f3b1a7b](https://github.com/AzurAqua/shareable-web/commit/f3b1a7b2370ec0eabc97851225a77aeb284cf42c) 已推送，包含 9 个项目文件，远端与本地提交一致。
+- [私有仓库](https://github.com/AzurAqua/ethics-committee) 已创建，默认分支 `main`；`origin` 已连接，本地 `main` 跟踪 `origin/main`。
+- [初始提交 f3b1a7b](https://github.com/AzurAqua/ethics-committee/commit/f3b1a7b2370ec0eabc97851225a77aeb284cf42c) 已推送，包含 9 个项目文件，远端与本地提交一致。
 - `python scripts/verify.py` 本地检查通过；临时加入的行尾空白错误被拒绝，退出码为 2，清理后再次检查通过；临时探针未进入提交。
 - 忽略规则验证通过：私密环境配置、依赖及构建产物会被忽略，`.env.example` 可纳入版本控制。
-- [首次 GitHub Actions 运行](https://github.com/AzurAqua/shareable-web/actions/runs/41639492388) 为 `completed / success`，对应初始提交。
-- [进度 Issue #1](https://github.com/AzurAqua/shareable-web/issues/1) 已创建，记录已完成的基础、后续任务及实际证据。
+- [首次 GitHub Actions 运行](https://github.com/AzurAqua/ethics-committee/actions/runs/41639492388) 为 `completed / success`，对应初始提交。
+- [进度 Issue #1](https://github.com/AzurAqua/ethics-committee/issues/1) 已创建，记录已完成的基础、后续任务及实际证据。
 - GitHub 授权完成前的一次隔离复核通过：80 个既有文件内容及 15 个上级规则、全局配置路径的存在状态和适用哈希均未变。
-- 后续提交 `af2eb5f` 已同步；[对应的线上检查](https://github.com/AzurAqua/shareable-web/actions/runs/41640094537) 同样为 `completed / success`。
+- 后续提交 `af2eb5f` 已同步；[对应的线上检查](https://github.com/AzurAqua/ethics-committee/actions/runs/41640094537) 同样为 `completed / success`。
 - 最后复核时，80 个既有文件及上述 15 个路径中的 14 个仍与最初基线一致；`C:\Users\G\.codex\config.toml` 已于 2026-11-03 20:56:07（Asia/Hong_Kong）更新，哈希不同。本任务未对该文件执行写入，保留其当前状态而不回退。全局 Git 提交身份与凭据辅助设置仍与本次读取的原有配置一致。
 
 需求访谈、技术选型和网页功能开发尚未开始；现有 CI 只验证仓库基础。
+
+## 项目命名
+
+日期：2026-11-03（Asia/Hong_Kong）。
+
+- 中文名称：伦理委员会。
+- 英文名称：Ethics Committee。
+- 本地目录：`C:\Users\G\Desktop\P\master1\TRPG\伦理委员会`。
+- GitHub 仓库：`AzurAqua/ethics-committee`，保持私有。
+- 原临时名称为 `shareable-web`；更名沿用原有目录与仓库，保留提交历史、Issue 和验证记录，并更新远端地址、项目内路径及凭据辅助程序路径。
+- 项目展示名采用“伦理委员会（Ethics Committee）”。[GitHub 仓库名只允许 ASCII 字母、数字及 `.`, `-`, `_`](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-new-repository)，因此仓库标识使用英文，中文名称保留在本地目录和展示内容中。
 
 ## 参考
 
