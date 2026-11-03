@@ -1,6 +1,8 @@
 # 伦理委员会（Ethics Committee）
 
-“伦理委员会”网页项目的独立工作目录，英文名称为 Ethics Committee，GitHub 仓库标识为 `ethics-committee`。具体用途、受众和功能待确认；当前已建立项目文档及 GitHub 基础，尚未开始需求访谈或网页功能开发。
+“伦理委员会”（Ethics Committee）是面向《三角机构》TRPG 玩家的个人游戏进度记录网页。玩家通过电脑或手机打开链接、点击格子，记录自己在游戏中的进程；不同使用者的数据相互隔离。
+
+第一版先分发给同团的几位玩家，后续希望面向所有使用该规则的玩家开放。网站入口允许任何拿到链接的人访问，暂不为访问人数过多额外设计流量防护。当前处于需求确认阶段；格子的具体机制由用户后续说明，保存、同步与找回方式待确认。GitHub 仓库标识为 `ethics-committee`。
 
 ## 文档入口
 
@@ -26,14 +28,14 @@ Set-Location -LiteralPath 'C:\Users\G\Desktop\P\master1\TRPG\伦理委员会'
 | 项目 | 状态 |
 | --- | --- |
 | 独立项目目录与规则文档 | 已建立 |
-| 需求、受众与第一版范围 | 待确认 |
+| 需求、受众与第一版范围 | 用途、设备、首批受众及公开入口已确认；具体记录机制与功能范围确认中 |
 | 页面结构、内容与视觉方向 | 待确认 |
 | 技术栈与托管方案 | 待选型 |
 | 本地 Git 仓库 | 已初始化，默认分支 `main`，根目录为本目录 |
 | GitHub 项目仓库与 Issue | [私有仓库](https://github.com/AzurAqua/ethics-committee) 已创建并同步；[进度 Issue #1](https://github.com/AzurAqua/ethics-committee/issues/1) 已建立 |
 | 仓库验证命令 | 已配置 `python scripts/verify.py`；见下文 |
 | GitHub Actions | 已接入推送、PR 和手动触发；[首次线上检查通过](https://github.com/AzurAqua/ethics-committee/actions/runs/41639492388) |
-| 部署、访问权限与正式链接 | 未配置 |
+| 部署、访问权限与正式链接 | 公开入口与使用者数据隔离已确定；保存方式、身份识别及实际部署待确认 |
 
 ## 命令与配置
 
@@ -79,4 +81,4 @@ gh repo view AzurAqua/ethics-committee
 
 ## 下一步
 
-GitHub 基础已接通。后续按 [PLAN.md](PLAN.md) 确认需求和分享约束，确定设计、技术与托管，并补齐应用验证和部署验收。
+GitHub 基础已接通。当前按 [PLAN.md](PLAN.md) 继续确认记录机制、数据保存及使用环境；共识明确后再确定设计、技术与托管，并补齐应用验证和部署验收。
