@@ -1,0 +1,26 @@
+name: Repository checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repository-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repository:
+    name: Repository whitespace
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Run repository checks
+        run: python scripts/verify.py
