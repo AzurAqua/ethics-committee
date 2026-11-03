@@ -110,7 +110,9 @@
 - 忽略规则验证通过：私密环境配置、依赖及构建产物会被忽略，`.env.example` 可纳入版本控制。
 - [首次 GitHub Actions 运行](https://github.com/AzurAqua/shareable-web/actions/runs/41639492388) 为 `completed / success`，对应初始提交。
 - [进度 Issue #1](https://github.com/AzurAqua/shareable-web/issues/1) 已创建，记录已完成的基础、后续任务及实际证据。
-- 隔离复核通过：80 个既有文件内容及 15 个上级规则、全局配置路径的存在状态和适用哈希均未变。
+- GitHub 授权完成前的一次隔离复核通过：80 个既有文件内容及 15 个上级规则、全局配置路径的存在状态和适用哈希均未变。
+- 后续提交 `af2eb5f` 已同步；[对应的线上检查](https://github.com/AzurAqua/shareable-web/actions/runs/41640094537) 同样为 `completed / success`。
+- 最后复核时，80 个既有文件及上述 15 个路径中的 14 个仍与最初基线一致；`C:\Users\G\.codex\config.toml` 已于 2026-11-03 20:56:07（Asia/Hong_Kong）更新，哈希不同。本任务未对该文件执行写入，保留其当前状态而不回退。全局 Git 提交身份与凭据辅助设置仍与本次读取的原有配置一致。
 
 需求访谈、技术选型和网页功能开发尚未开始；现有 CI 只验证仓库基础。
 
