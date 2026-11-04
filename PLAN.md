@@ -240,6 +240,7 @@
 - 浏览器验证了键盘点亮、末端变灰及最后一个空白格的双选项。390 像素视口下三条 30 格轨道每行十格，人伦条为十格加五格。
 - 私有演示已部署，未登录时显示站点访问提示。演示使用页面内临时状态，正式收信、云同步及中国大陆网络仍待验证。[私有演示](https://ethics-committee.blithelily16.chatgpt.site)
 - Supabase 免费项目已建于新加坡。通过 SQL Editor 执行首版迁移，确认玩家记录表已启用行级访问控制。已配置站点回跳地址，邮箱自助注册和邮箱确认保持启用。自定义 SMTP 启用后才能修改注册及重置邮件模板。
+- 私有演示的 ChatGPT 登录曾返回 `unsupported_country`。已部署接入 Supabase 的联网构建并开放网页入口。无会话请求验证页面和脚本均返回 HTTP 200，Supabase 登录配置可读，匿名读取玩家记录返回 HTTP 401。QQ 邮箱发信、真实账号全流程及中国大陆网络仍待验收。[联网测试入口](https://ethics-committee.blithelily16.chatgpt.site)
 
 ## 参考
 
