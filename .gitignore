@@ -5,6 +5,7 @@
 !.env.*.example
 *.pem
 *.key
+/.local-secrets/
 
 # Dependencies, generated files and test output.
 node_modules/

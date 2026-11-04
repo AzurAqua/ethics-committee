@@ -45,6 +45,22 @@ pnpm preview
 
 GitHub Actions 运行同一组仓库检查、测试及构建。应用测试覆盖轨道边界、最后一格的双选项、数据库权限和写入冲突。
 
+## 本机保管数据库密码
+
+在项目目录的 Windows PowerShell 中运行以下命令，然后在隐藏输入提示中粘贴 Supabase 的数据库密码。
+
+```powershell
+.\scripts\database-password.ps1 -Action Save
+```
+
+取用时运行以下命令，再粘贴到需要密码的位置。
+
+```powershell
+.\scripts\database-password.ps1 -Action Copy
+```
+
+加密文件位于 `.local-secrets/database-password.dpapi`。它由 Windows DPAPI 保护，正常情况下只有本机当前 Windows 账户能解密。目录已被 Git 忽略。换电脑或重装后可在 Supabase 后台重置密码。
+
 ## 联网部署
 
 1. 建立 Supabase 免费项目，在 SQL Editor 执行 [数据库迁移](supabase/migrations/20261104000000_player_records.sql)。
