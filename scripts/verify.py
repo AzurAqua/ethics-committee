@@ -34,7 +34,7 @@ def main() -> int:
         output = error.stdout + error.stderr
         sys.stderr.write(output.decode("utf-8", errors="replace"))
         return error.returncode
-    print("Repository whitespace checks passed. Application checks are not configured.")
+    print("Repository whitespace checks passed.")
     return 0
 
 
