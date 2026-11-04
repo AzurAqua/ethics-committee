@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   repository:
-    name: Repository whitespace
+    name: Repository and application
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -24,3 +24,15 @@ jobs:
           persist-credentials: false
       - name: Run repository checks
         run: python scripts/verify.py
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install dependencies
+        run: |
+          npm install --global pnpm@11.25.0
+          pnpm install --frozen-lockfile
+      - name: Test and build
+        run: |
+          pnpm test
+          pnpm build

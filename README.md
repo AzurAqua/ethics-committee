@@ -4,7 +4,7 @@
 
 第一版先分发给同团的几位玩家，后续希望面向所有使用该规则的玩家开放，优先服务中国大陆用户。网站入口允许任何拿到链接的人访问，要求个人记录在电脑与手机之间自动同步；第一版先保证联网体验，完整离线功能后置，暂不为访问人数过多额外设计流量防护。
 
-当前处于需求确认阶段。玩家可自行注册并验证邮箱，每个账号一份记录，四条轨道均由玩家手动操作。点格后自动保存，打开或切回网页时读取最新状态。玩家使用邮箱和密码登录，通过注册邮箱接收密码重置链接。GitHub 仓库标识为 `ethics-committee`。
+第一版界面和轨道规则已实现。云数据库和发信服务待接通。
 
 ## 文档入口
 
@@ -25,34 +25,39 @@ Set-Location -LiteralPath 'C:\Users\G\Desktop\P\master1\TRPG\伦理委员会'
 
 终端切换目录不等于修改当前 Codex 会话的项目根目录，但不妨碍在已有对话中按上述范围继续工作；无需重新开对话、修改全局配置或上级规则。
 
-## 当前准备状态
+## 本地运行
 
-| 项目 | 状态 |
-| --- | --- |
-| 独立项目目录与规则文档 | 已建立 |
-| 需求、受众与第一版范围 | 用途、设备、受众、公开入口、自动同步、联网优先、中国大陆使用地区、轨道操作及邮箱密码登录已确认 |
-| 页面结构、内容与视觉方向 | 待确认 |
-| 技术栈与托管方案 | 待选型 |
-| 本地 Git 仓库 | 已初始化，默认分支 `main`，根目录为本目录 |
-| GitHub 项目仓库与 Issue | [私有仓库](https://github.com/AzurAqua/ethics-committee) 已创建并同步；[进度 Issue #1](https://github.com/AzurAqua/ethics-committee/issues/1) 已建立 |
-| 仓库验证命令 | 已配置 `python scripts/verify.py`；见下文 |
-| GitHub Actions | 已接入推送、PR 和手动触发；[首次线上检查通过](https://github.com/AzurAqua/ethics-committee/actions/runs/41639492388) |
-| 部署、访问权限与正式链接 | 公开入口、使用者数据隔离及中国大陆访问目标已确定。具体保存方案及实际部署待确认 |
+使用 Node.js 24、pnpm 11.25.0、Python 3.10 或更新版本，以及 Git。
 
-## 命令与配置
+```powershell
+pnpm install --frozen-lockfile
+pnpm dev
+```
 
-当前已有 Git 基础、项目文档、任务与 PR 模板及仓库检查。应用运行环境、依赖和业务接口待需求及选型确定后加入。
+按终端给出的地址打开网页。首次运行可试用格子，刷新后恢复为空白。
 
-| 用途 | 当前状态 |
-| --- | --- |
-| 安装依赖 | 未配置 |
-| 本地启动 | 未配置 |
-| 检查与构建 | 未配置 |
-| 仓库验证入口 | `python scripts/verify.py`，需要 Python 3.10 或更新版本及 Git |
-| 应用功能验证 | 未配置 |
-| 发布与回滚 | 未配置 |
+```powershell
+python scripts/verify.py
+pnpm test
+pnpm build
+pnpm preview
+```
 
-后续若使用环境变量，只记录变量名称和用途，不在文档中保存真实密钥。
+GitHub Actions 运行同一组仓库检查、测试及构建。应用测试覆盖轨道边界、最后一格的双选项、数据库权限和写入冲突。
+
+## 联网部署
+
+1. 建立 Supabase 免费项目，在 SQL Editor 执行 [数据库迁移](supabase/migrations/20261104000000_player_records.sql)。
+2. 在 Authentication 中启用邮箱注册及邮箱确认，将密码最小长度设为 8。将正式站点地址设为 Site URL，并加入允许的回跳地址。
+3. 配置 [自定义 SMTP](https://supabase.com/docs/guides/auth/auth-smtp)。在 [邮件模板](https://supabase.com/docs/guides/auth/auth-email-templates) 中分别使用以下链接，便于在其他浏览器打开邮件后完成验证。
+
+```html
+<a href="{{ .RedirectTo }}/?token_hash={{ .TokenHash }}&amp;type=signup">验证邮箱</a>
+<a href="{{ .RedirectTo }}/?token_hash={{ .TokenHash }}&amp;type=recovery">重置密码</a>
+```
+
+4. 复制 `.env.example` 为 `.env.local`，填入项目 URL 和浏览器发布密钥 `sb_publishable_…`。运行 `pnpm build` 后上传 `dist/` 产物。数据库管理密钥和 SMTP 密码仅在服务后台使用。
+5. 用两个账号测试收信、密码重置及记录隔离。用同一账号在电脑和手机测试自动保存、切回读取和旧版本冲突。开放分享前，用中国大陆实际网络验证页面、数据库和邮件链路。
 
 ## Git 与进度工作方式
 
@@ -79,8 +84,8 @@ gh repo view AzurAqua/ethics-committee
 
 任务使用 GitHub Issue 的“项目任务”模板，记录目标、验收条件、实际结果和阻塞；有 PR 时按模板填写变化、验证和交付事项。[进度 Issue #1](https://github.com/AzurAqua/ethics-committee/issues/1) 跟踪整体准备与第一版交付。
 
-`Repository checks` 工作流在推送、PR 和手动触发时运行与本地相同的 `scripts/verify.py`。当前仅验证仓库根目录、存在已纳入版本控制的文件，并检查这些文件的工作区内容是否存在 Git 可检测的空白格式错误；新增文件须先暂存。应用构建和功能测试会在开发阶段加入。
+`Repository checks` 在推送、PR 和手动触发时运行仓库格式检查、应用测试及构建。
 
 ## 下一步
 
-第一版共识草案与验收场景见 [PLAN.md](PLAN.md)。需求确认后进入设计与选型。
+接通免费 Supabase 与发信服务，验收正式版联网流程。需求和阶段状态见 [PLAN.md](PLAN.md)。
