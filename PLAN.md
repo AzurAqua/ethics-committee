@@ -33,3 +33,11 @@
 - [ ] 标记首版发布版本，记录对应提交和回滚入口。
 
 邮件注册与自助密码重置后置。项目反馈通过 [Issues](https://github.com/AzurAqua/ethics-committee/issues) 收集。
+
+## 首版候选与回滚
+
+首版候选使用 `v0.1.0-rc.1` 标记已通过功能与大陆网络验收的网页版本。五份玩家账号交付后，再完成正式版发布。
+
+网页由 GitHub Pages 工作流发布。需要回滚时，可在 GitHub Actions 中打开对应版本成功的 `Deploy website` 记录，选择 `Re-run all jobs`，以该记录原始提交重新构建和发布。GitHub 支持在初次运行后的 30 天内重新运行。
+
+超过该时间窗口，可从版本标签取出已验收的网页源码，作为新提交合入 `main`，通过同一工作流发布。[GitHub 工作流重跑说明](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/re-run-workflows-and-jobs)
