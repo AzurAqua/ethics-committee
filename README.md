@@ -6,7 +6,7 @@
 
 正式首版为 [v0.1.0](https://github.com/AzurAqua/ethics-committee/releases/tag/v0.1.0)。上述网站仍提供维护者预建账号的第一版。
 
-本分支 `feat/public-release` 正在开发公开版，增加邮箱自助注册、重发验证邮件、密码找回和页面内帮助，仍为每个账号一份记录。公开版使用独立后台及预览入口，不覆盖第一版。真实收信流程尚待验收，详见 [公开版验收](PUBLIC-ACCEPTANCE.md)。
+本分支 `feat/public-release` 正在开发公开版，增加邮箱自助注册、重发验证邮件、密码找回和页面内帮助，仍为每个账号一份记录。[打开公开版预览](https://azuraqua.github.io/ethics-committee-preview/)。预览使用独立后台，账号与记录和第一版分开。真实收信流程尚待验收，详见 [公开版验收](PUBLIC-ACCEPTANCE.md)。
 
 ## 点击格子的规则
 
