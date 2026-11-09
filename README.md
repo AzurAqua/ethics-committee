@@ -1,125 +1,54 @@
 # 伦理委员会（Ethics Committee）
 
-「伦理委员会」（Ethics Committee）是《三角机构》TRPG 的个人轨道记录网站，涵盖职能、现实、异常三条轨道和「伦理委员会」扩展的人伦条。玩家可以用电脑或手机点击格子记录游戏进程，各自的记录相互隔离。
+《三角机构》TRPG 的个人轨道记录网站，包含职能、现实、异常三条轨道，以及「伦理委员会」扩展的人伦条。支持电脑与手机，每位玩家使用自己的账号记录进度。
 
-第一版先分发给同团的几位玩家，后续希望面向所有使用该规则的玩家开放，优先服务中国大陆用户。网站入口允许任何拿到链接的人访问，要求个人记录在电脑与手机之间自动同步；第一版先保证联网体验，完整离线功能后置，暂不为访问人数过多额外设计流量防护。
+[打开网站](https://azuraqua.github.io/ethics-committee/) · [玩家使用说明](PLAYER-GUIDE.md) · [项目进度](PLAN.md)
 
-第一版界面和轨道规则已实现，联网测试版已接入云数据库。真实账号的保存、刷新、冲突及隔离检查已通过。手机访问当前托管入口被平台安全防护拦截，需修复入口后重新验收，邮件流程后置。
-
-首批玩家采用维护者预建账号。当前生产配置隐藏自助注册和邮件找回入口，忘记密码时联系维护者。玩家操作说明见 [PLAYER-GUIDE.md](PLAYER-GUIDE.md)。
+首批试用采用维护者预建账号。开通账号或忘记密码时，请联系维护者。邮件注册与自助找回暂未开放。
 
 ## 点击格子的规则
 
-每条轨道从全空白开始，只能操作两端的边界格。
+每条轨道从全空白开始，只能操作边界格。
 
-- **从左端点亮。** 点击最左侧的空白格，它会变成轨道的亮色。点亮后可以接着向右推进，也可以点击最右侧的已点亮格，撤回为「空白」。
-- **从右端划去。** 点击最右侧的空白格，它会变灰。划去后可以接着向左推进，也可以点击最左侧的灰格，撤回为「空白」。
-- **只剩一格空白时**，这格可以点亮也可以划去。点击后会弹出选择，其余合法操作点击即生效。
+- **从左端点亮。** 点击最左侧空白格，变成对应轨道的亮色。点击最后一个已点亮格，可撤回为空白。
+- **从右端划去。** 点击最右侧空白格，使它变灰。点击第一个灰格，可撤回为空白。
+- **只剩一格空白时**，点击后选择点亮或变灰。其余合法操作点击即生效。
 
-四条轨道由玩家各自手动记录。联网版登录后，每次格子变化都会自动保存。
+四条轨道各自独立，游戏中的联动效果由玩家手动操作。每次变化会自动保存，打开或切回页面时读取最新记录。若其他设备已保存更新，网页会载入最新状态并提示玩家重新操作。
 
-## 文档入口
+职能、现实、异常各 30 格，人伦条 15 格，每行 10 格。保留格内编号、职能轨道的职级标注及轨道说明。
 
-| 文档 | 内容 |
-| --- | --- |
-| [AGENTS.md](AGENTS.md) | 仅适用于本项目及子目录的稳定工作规则 |
-| [PLAN.md](PLAN.md) | 完整准备计划、阶段状态、待确认事项和验收记录 |
+## 本地开发
 
-## 从这里开展工作
+需要 Node.js 24、pnpm 11.25.0、Python 3.10 或更新版本，以及 Git。
 
-可以在已有 Codex 对话中继续工作：显式读取本目录的 `AGENTS.md`，并将项目命令和修改限定在本目录。新会话从本目录启动可自动发现项目规则。已有全局规则继续生效；本项目规则不向父目录或同级目录扩展。
-
-终端中可使用：
-
-```powershell
-Set-Location -LiteralPath 'C:\Users\G\Desktop\P\master1\TRPG\伦理委员会'
-```
-
-终端切换目录不等于修改当前 Codex 会话的项目根目录，但不妨碍在已有对话中按上述范围继续工作；无需重新开对话、修改全局配置或上级规则。
-
-## 本地运行
-
-使用 Node.js 24、pnpm 11.25.0、Python 3.10 或更新版本，以及 Git。
-
-```powershell
+```sh
 pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-按终端给出的地址打开网页。首次运行可试用格子，刷新后恢复为空白。
+本地开发默认提供页面内试用，刷新后清空。联网开发可复制 `.env.example` 为 `.env.local`，填写自己 Supabase 项目的 URL 和浏览器发布密钥。
 
-```powershell
+提交前运行检查和生产构建。
+
+```sh
 python scripts/verify.py
 pnpm test
 pnpm build
-pnpm preview
 ```
 
-GitHub Actions 运行同一组仓库检查、测试及构建。应用测试覆盖轨道边界、最后一格的双选项、数据库权限和写入冲突。
+测试覆盖轨道边界、最后一格的选择、数据库访问隔离及旧版本冲突。数据库结构位于 [supabase/migrations](supabase/migrations)。
 
-生产构建使用已纳入版本记录的 `.env.production`，其中只包含项目 URL、浏览器发布密钥和首批账号模式。服务器管理密钥放在 `.local-secrets/supabase-admin-key.txt`。
+## 部署
 
-维护者可运行 `pnpm check:live`，通过 Supabase 官方管理接口创建两份已确认的测试账号，再用独立登录会话验证云端保存、冲突和账号隔离。测试账号密码及结果仅保存在 `.local-secrets/`，该命令会修改专用测试账号的轨道。测试账号保留供浏览器验收使用。
+网站使用 GitHub Pages，玩家记录存储在 Supabase。生产配置中的 URL 和 publishable key 用于浏览器连接服务，记录权限由数据库访问规则控制。
 
-为玩家开通账号可运行 `node scripts/manage-player.mjs create 玩家邮箱`。玩家忘记密码时，维护者可运行 `node scripts/manage-player.mjs reset 玩家邮箱` 生成新密码，已有轨道记录继续归属原账号。成功后的账号资料保存在 `.local-secrets/players/`，交给对应玩家使用。操作中断时，`.pending` 文件保留本次准备的密码，便于核对。
+`main` 分支更新后，`Deploy website` 工作流会验证、构建并发布网站。项目子路径由构建命令设置，CSS、脚本和图标使用对应资源路径。
 
-## 本机保管数据库密码
+使用自己的部署时，请配置自己的 Supabase 项目、访问规则及站点地址。服务端密钥由维护者在服务端管理。
 
-在项目目录的 Windows PowerShell 中运行以下命令，然后在隐藏输入提示中粘贴 Supabase 的数据库密码。
+## 当前状态与反馈
 
-```powershell
-.\scripts\database-password.ps1 -Action Save
-```
+网页主体、云端保存、并发冲突和账号隔离已完成验证。新的独立托管入口仍需中国大陆手机网络实测，验收状态见 [PLAN.md](PLAN.md)。
 
-取用时运行以下命令，再粘贴到需要密码的位置。
-
-```powershell
-.\scripts\database-password.ps1 -Action Copy
-```
-
-加密文件位于 `.local-secrets/database-password.dpapi`。它由 Windows DPAPI 保护，正常情况下只有本机当前 Windows 账户能解密。目录已被 Git 忽略。换电脑或重装后可在 Supabase 后台重置密码。
-
-## 联网部署
-
-1. 建立 Supabase 免费项目，在 SQL Editor 执行 [数据库迁移](supabase/migrations/20261104000000_player_records.sql)。
-2. 在 Authentication 中启用邮箱注册及邮箱确认，将密码最小长度设为 8。将正式站点地址设为 Site URL，并加入允许的回跳地址。
-3. 配置 [自定义 SMTP](https://supabase.com/docs/guides/auth/auth-smtp)。在 [邮件模板](https://supabase.com/docs/guides/auth/auth-email-templates) 中分别使用以下链接，便于在其他浏览器打开邮件后完成验证。
-
-```html
-<a href="{{ .RedirectTo }}/?token_hash={{ .TokenHash }}&amp;type=signup">验证邮箱</a>
-<a href="{{ .RedirectTo }}/?token_hash={{ .TokenHash }}&amp;type=recovery">重置密码</a>
-```
-
-4. 复制 `.env.example` 为 `.env.local`，填入项目 URL 和浏览器发布密钥 `sb_publishable_…`。运行 `pnpm build` 后上传 `dist/` 产物。数据库管理密钥和 SMTP 密码仅在服务后台使用。
-5. 用两个账号测试收信、密码重置及记录隔离。用同一账号在电脑和手机测试自动保存、切回读取和旧版本冲突。开放分享前，用中国大陆实际网络验证页面、数据库和邮件链路。
-
-## Git 与进度工作方式
-
-本地提交身份使用 `AzurAqua` 及其 GitHub noreply 邮箱，仅写入本仓库配置。忽略规则排除本地密钥、私密配置、依赖和生成文件；文本统一使用 LF 行尾。
-
-每个可复核的小步骤选择明确文件暂存，检查变更，再提交。`path/to/file` 和提交说明需替换为本次实际内容：
-
-```powershell
-git status --short --branch
-git add -- path/to/file
-git diff --cached
-python scripts/verify.py
-git commit -m 'Describe the completed change'
-```
-
-远端 `origin` 为 `https://github.com/AzurAqua/ethics-committee.git`，本地 `main` 已跟踪 `origin/main`。完成本地提交后使用 `git push` 同步；本地提交、远端推送和网站发布分别记录。
-
-GitHub CLI 已通过官方浏览器流程授权。CLI 配置位于本项目的 `.git/gh`，Git 凭据辅助程序只在本仓库内配置；无需修改全局 Git 配置。Git 会自动使用项目认证路径。若在新终端直接使用 `gh`，先执行：
-
-```powershell
-$env:GH_CONFIG_DIR = Join-Path (Get-Location).Path '.git\gh'
-gh repo view AzurAqua/ethics-committee
-```
-
-任务使用 GitHub Issue 的“项目任务”模板，记录目标、验收条件、实际结果和阻塞；有 PR 时按模板填写变化、验证和交付事项。[进度 Issue #1](https://github.com/AzurAqua/ethics-committee/issues/1) 跟踪整体准备与第一版交付。
-
-`Repository checks` 在推送、PR 和手动触发时运行仓库格式检查、应用测试及构建。
-
-## 下一步
-
-完成手机大陆网络验收，按提供的 5 个登录邮箱开通首批玩家账号并交付账号资料。需求和阶段状态见 [PLAN.md](PLAN.md)。
+遇到问题可在 [Issues](https://github.com/AzurAqua/ethics-committee/issues) 中说明设备、浏览器、发生时间、页面提示和复现步骤。

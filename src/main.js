@@ -5,12 +5,13 @@ import './style.css';
 const url = import.meta.env.VITE_SUPABASE_URL;
 const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const managedAccounts = import.meta.env.VITE_MANAGED_ACCOUNTS === 'true';
+const redirectUrl = new URL(import.meta.env.BASE_URL, location.origin).href.replace(/\/$/, '');
 const client = url && key ? createClient(url, key, { auth: { detectSessionInUrl: false, flowType: 'pkce' } }) : null;
 const app = document.querySelector('#app');
 app.innerHTML = `
   <header class="masthead">
     <div class="mast-inner">
-      <div class="brand"><img src="/seal.svg" alt=""><div><strong>伦理委员会</strong><small>ETHICS COMMITTEE</small></div></div>
+      <div class="brand"><img src="${import.meta.env.BASE_URL}seal.svg" alt=""><div><strong>伦理委员会</strong><small>ETHICS COMMITTEE</small></div></div>
       <div class="account"><span id="account-label"></span><button id="account-button" class="button secondary" hidden>登录</button></div>
     </div>
   </header>
@@ -329,7 +330,7 @@ byId('auth-form').addEventListener('submit', async (event) => {
   const mode = authMode;
   const email = byId('email').value.trim();
   const password = byId('password').value;
-  const options = { emailRedirectTo: location.origin };
+  const options = { emailRedirectTo: redirectUrl };
   const feedback = byId('auth-status');
   authBusy = true;
   for (const button of auth.querySelectorAll('button')) button.disabled = true;
@@ -338,7 +339,7 @@ byId('auth-form').addEventListener('submit', async (event) => {
     let result;
     if (mode === 'login') result = await client.auth.signInWithPassword({ email, password });
     if (mode === 'signup') result = await client.auth.signUp({ email, password, options });
-    if (mode === 'forgot') result = await client.auth.resetPasswordForEmail(email, { redirectTo: location.origin });
+    if (mode === 'forgot') result = await client.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl });
     if (mode === 'reset') result = await client.auth.updateUser({ password });
     if (result.error) throw result.error;
     if (mode === 'signup') {
