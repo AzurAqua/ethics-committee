@@ -1,11 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 import { actions, applyAction, cellState, emptyRecord, legalActions, tracks } from './tracks.js';
+import { authErrorMessage, confirmEmailLink, readEmailLink, submitAuth } from './auth-flow.js';
 import './style.css';
 
 const url = import.meta.env.VITE_SUPABASE_URL;
 const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const managedAccounts = import.meta.env.VITE_MANAGED_ACCOUNTS === 'true';
-const redirectUrl = new URL(import.meta.env.BASE_URL, location.origin).href.replace(/\/$/, '');
+const redirectUrl = new URL(import.meta.env.BASE_URL, location.origin).href;
 const client = url && key ? createClient(url, key, { auth: { detectSessionInUrl: false, flowType: 'pkce' } }) : null;
 const app = document.querySelector('#app');
 app.innerHTML = `
@@ -30,6 +31,7 @@ app.innerHTML = `
         <circle cx="161" cy="124" r="5" class="dot" />
       </svg>
     </section>
+    <p class="preview-notice">公开版预览 · 每个账号暂时保留一份记录。<a href="https://azuraqua.github.io/ethics-committee/">首批玩家第一版入口</a></p>
     <section class="workspace" aria-label="进程轨道">
       <div class="board-bar">
         <div class="board-title"><span>01 /</span><h2>进程轨道</h2></div>
@@ -38,6 +40,19 @@ app.innerHTML = `
       <div class="statusbar"><p id="status" role="status" aria-live="polite"></p><button id="refresh" class="button text-button" hidden>刷新记录</button></div>
       <div id="tracks" class="tracks"></div>
     </section>
+    <details class="help-panel">
+      <summary>使用说明与问题反馈</summary>
+      <div class="help-content">
+        <h2>第一次使用</h2>
+        <p>注册邮箱和密码，打开验证邮件并确认，即可记录。换设备时使用同一个账号登录。每个账号一份记录，其他玩家看不到你的进程。</p>
+        <h2>怎样点格</h2>
+        <p>从左端依次点亮，从右端依次变灰。最后一个亮格和第一个灰格可点击撤回。仅剩一格空白时，可以选择点亮或变灰。四条轨道独立，规则中的联动由你手动操作。</p>
+        <h2>保存与找回</h2>
+        <p>每次点格后等待「已保存」。重新打开或切回页面时自动同步。看到「记录已在另一台设备更新」时，请先查看新状态再继续操作。保存结果未确认时，点击「刷新记录」核对，不要重复点格。</p>
+        <p>收不到邮件时，检查垃圾邮件并确认邮箱拼写，再使用「重发验证邮件」。忘记密码可从登录窗口发送重置链接，请打开最新的一封。密码重置不会清空记录。</p>
+        <a href="https://github.com/AzurAqua/ethics-committee/issues" target="_blank" rel="noopener noreferrer">反馈问题</a><span> · 请说明设备、浏览器和页面提示，不要公开密码或邮件链接。</span>
+      </div>
+    </details>
     <footer><span>伦理委员会 <b>·</b> 个人进程档案</span><span>TRIANGLE AGENCY / PLAYER RECORD</span></footer>
   </main>
   <dialog id="choice" aria-labelledby="choice-title">
@@ -52,6 +67,7 @@ app.innerHTML = `
       <p class="dialog-kicker">伦理委员会 / 账号</p><h2 id="auth-title"></h2><p id="auth-help"></p>
       <label id="email-row">邮箱<input id="email" type="email" autocomplete="email" maxlength="254"></label>
       <label id="password-row">密码<input id="password" type="password" minlength="8" maxlength="72"></label>
+      <label id="confirm-password-row" hidden>确认密码<input id="confirm-password" type="password" autocomplete="new-password" minlength="8" maxlength="72"></label>
       <p id="auth-status" role="status" aria-live="polite"></p>
       <button id="auth-submit" class="button primary auth-submit" type="submit"></button>
       <div id="auth-links" class="auth-links"></div>
@@ -76,6 +92,7 @@ let recovery = false;
 let authMode = 'login';
 let authBusy = false;
 let selectedCell = null;
+let pendingEmailLink = null;
 
 function announce(message, tone = 'neutral') {
   byId('status').textContent = message;
@@ -83,7 +100,7 @@ function announce(message, tone = 'neutral') {
 }
 
 function canEdit() {
-  return ready && !busy && !recovery && (!client || Boolean(session?.user.email_confirmed_at));
+  return ready && !busy && !recovery && !pendingEmailLink && (!client || Boolean(session?.user.email_confirmed_at));
 }
 
 function makeBoard() {
@@ -138,7 +155,7 @@ function render() {
       const allowed = legalActions(record, index, cell);
       button.dataset.state = state;
       button.classList.toggle('available', canEdit() && allowed.length > 0);
-      button.disabled = allowed.length === 0 || !ready || recovery || Boolean(client && !session?.user.email_confirmed_at);
+      button.disabled = allowed.length === 0 || !ready || recovery || Boolean(pendingEmailLink) || Boolean(client && !session?.user.email_confirmed_at);
       button.setAttribute('aria-disabled', String(button.disabled || busy));
       const details = [track.name + '第' + cell + '格', track.codes[cell], track.ranks?.[cell], labels[state]];
       if (canEdit() && allowed.length) details.push(allowed.map((action) => actions[action]).join('或'));
@@ -255,7 +272,9 @@ const authText = {
     : '登录后打开你的个人记录。', '登录'],
   signup: ['注册', '验证邮箱后，即可开始记录。', '发送验证邮件'],
   forgot: ['找回密码', '我们会向注册邮箱发送重置链接。', '发送重置链接'],
-  reset: ['设置新密码', '请输入至少 8 个字符的新密码。', '保存新密码']
+  resend: ['重发验证邮件', '填写注册时使用的邮箱，收到后请打开最新的一封邮件。', '重发验证邮件'],
+  reset: ['设置新密码', '请输入至少 8 个字符的新密码。已有轨道记录会保留。', '保存新密码'],
+  confirm: ['确认邮件链接', '点击下方按钮完成邮箱验证或继续重置密码。', '继续']
 };
 
 function openAuth(mode, notice = '') {
@@ -266,16 +285,23 @@ function openAuth(mode, notice = '') {
   byId('auth-submit').textContent = submit;
   byId('auth-status').textContent = notice;
   byId('password').value = '';
-  byId('email-row').hidden = mode === 'reset';
-  byId('email').required = mode !== 'reset';
-  byId('password-row').hidden = mode === 'forgot';
-  byId('password').required = mode !== 'forgot';
+  byId('confirm-password').value = '';
+  const needsEmail = !['reset', 'confirm'].includes(mode);
+  const needsPassword = ['login', 'signup', 'reset'].includes(mode);
+  const needsConfirmation = ['signup', 'reset'].includes(mode);
+  byId('email-row').hidden = !needsEmail;
+  byId('email').required = needsEmail;
+  byId('password-row').hidden = !needsPassword;
+  byId('password').required = needsPassword;
+  byId('confirm-password-row').hidden = !needsConfirmation;
+  byId('confirm-password').required = needsConfirmation;
+  byId('confirm-password').setCustomValidity('');
   byId('password').autocomplete = mode === 'login' ? 'current-password' : 'new-password';
-  byId('close-auth').hidden = mode === 'reset';
+  byId('close-auth').hidden = recovery;
   const links = byId('auth-links');
   links.replaceChildren();
-  const switches = mode === 'login' ? (managedAccounts ? [] : [['signup', '注册账号'], ['forgot', '忘记密码？']])
-    : mode === 'reset' ? [] : [['login', '返回登录']];
+  const switches = mode === 'login' ? (managedAccounts ? [] : [['signup', '注册账号'], ['forgot', '忘记密码？'], ['resend', '重发验证邮件']])
+    : ['reset', 'confirm'].includes(mode) ? [] : [['login', '返回登录']];
   for (const [next, label] of switches) {
     const button = document.createElement('button');
     button.type = 'button';
@@ -285,7 +311,7 @@ function openAuth(mode, notice = '') {
     links.append(button);
   }
   if (!auth.open) auth.showModal();
-  byId(mode === 'reset' ? 'password' : 'email').focus();
+  byId(mode === 'confirm' ? 'auth-submit' : mode === 'reset' ? 'password' : 'email').focus();
 }
 
 function setSession(next) {
@@ -300,7 +326,7 @@ function setSession(next) {
     if (choice.open) choice.close('cancel');
   }
   render();
-  if (recovery) return;
+  if (recovery || pendingEmailLink) return;
   if (session && !ready) void sync();
   else if (!session) announce('登录后查看和记录你的进程。');
 }
@@ -320,9 +346,20 @@ accountButton.addEventListener('click', async () => {
     render();
   }
 });
-byId('close-auth').addEventListener('click', () => auth.close());
+byId('close-auth').addEventListener('click', () => {
+  if (authBusy) return;
+  pendingEmailLink = null;
+  auth.close();
+  setSession(session);
+});
+byId('confirm-password').addEventListener('input', () => byId('confirm-password').setCustomValidity(''));
+byId('password').addEventListener('input', () => byId('confirm-password').setCustomValidity(''));
 auth.addEventListener('cancel', (event) => {
   if (recovery || authBusy) event.preventDefault();
+  else {
+    pendingEmailLink = null;
+    setSession(session);
+  }
 });
 byId('auth-form').addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -330,24 +367,35 @@ byId('auth-form').addEventListener('submit', async (event) => {
   const mode = authMode;
   const email = byId('email').value.trim();
   const password = byId('password').value;
-  const options = { emailRedirectTo: redirectUrl };
+  if (['signup', 'reset'].includes(mode) && password !== byId('confirm-password').value) {
+    byId('confirm-password').setCustomValidity('两次密码输入不一致。');
+    byId('confirm-password').reportValidity();
+    return;
+  }
   const feedback = byId('auth-status');
   authBusy = true;
   for (const button of auth.querySelectorAll('button')) button.disabled = true;
   feedback.textContent = '正在处理…';
   try {
-    let result;
-    if (mode === 'login') result = await client.auth.signInWithPassword({ email, password });
-    if (mode === 'signup') result = await client.auth.signUp({ email, password, options });
-    if (mode === 'forgot') result = await client.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl });
-    if (mode === 'reset') result = await client.auth.updateUser({ password });
-    if (result.error) throw result.error;
-    if (mode === 'signup') {
-      if (result.data.session) {
-        await client.auth.signOut({ scope: 'local' });
-        throw new Error('Email verification is disabled');
+    if (mode === 'confirm') {
+      const link = pendingEmailLink;
+      const next = await confirmEmailLink(client.auth, link);
+      pendingEmailLink = null;
+      if (link.type === 'recovery') {
+        recovery = true;
+        sessionStorage.setItem(recoveryKey, next.user.id);
+        setSession(next);
+        openAuth('reset');
+      } else {
+        auth.close();
+        setSession(next);
+        announce('邮箱验证成功，正在读取记录…', 'ok');
       }
-      openAuth('login', '请查收验证邮件，完成验证后登录。');
+      return;
+    }
+    const data = await submitAuth(client.auth, mode, { email, password, redirectUrl });
+    if (mode === 'signup' || mode === 'resend') {
+      openAuth('login', '若账号尚未验证，请查收验证邮件（包括垃圾邮件），并打开最新的一封完成验证。');
     } else if (mode === 'forgot') {
       openAuth('login', '若该邮箱已注册，请查收密码重置邮件。');
     } else if (mode === 'reset') {
@@ -355,13 +403,17 @@ byId('auth-form').addEventListener('submit', async (event) => {
       recovery = false;
       auth.close();
       setSession(session);
+      announce('新密码已保存，轨道记录已保留。', 'ok');
     } else {
       auth.close();
-      setSession(result.data.session);
+      setSession(data.session);
     }
-  } catch {
-    feedback.textContent = mode === 'login' ? '登录失败，请检查邮箱、密码和验证状态后重试。'
-      : '暂时无法完成，请检查网络和输入后重试。';
+  } catch (error) {
+    if (mode === 'confirm' && error.code === 'otp_expired') {
+      const next = pendingEmailLink?.type === 'recovery' ? 'forgot' : 'resend';
+      pendingEmailLink = null;
+      openAuth(next, authErrorMessage(error, mode));
+    } else feedback.textContent = authErrorMessage(error, mode);
   } finally {
     authBusy = false;
     for (const button of auth.querySelectorAll('button')) button.disabled = false;
@@ -378,30 +430,27 @@ async function boot() {
   announce('正在连接账号…');
   render();
   const address = new URL(location.href);
-  const token = address.searchParams.get('token_hash');
-  const type = address.searchParams.get('type');
+  pendingEmailLink = readEmailLink(location.href);
   let emailLinkNotice = '';
-  if (token) {
+  if (pendingEmailLink) {
     address.searchParams.delete('token_hash');
     address.searchParams.delete('type');
     history.replaceState(null, '', address.pathname + address.search);
-    try {
-      if (type !== 'signup' && type !== 'recovery') throw new Error('Unknown link type');
-      const { data, error } = await client.auth.verifyOtp({ token_hash: token, type });
-      if (error) throw error;
-      if (type === 'recovery' && data.session) sessionStorage.setItem(recoveryKey, data.session.user.id);
-      if (type === 'signup') emailLinkNotice = '邮箱验证成功';
-    } catch {
-      emailLinkNotice = '邮件链接已失效，请重新发起验证或重置。';
-    }
+  } else if (address.searchParams.has('error') || address.searchParams.has('code')) {
+    emailLinkNotice = '邮件链接无法使用，请重新发送邮件。若持续失败，请反馈问题。';
+    for (const name of ['error', 'error_code', 'error_description', 'code']) address.searchParams.delete(name);
+    history.replaceState(null, '', address.pathname + address.search);
   }
   const { data } = await client.auth.getSession();
   recovery = Boolean(data.session && sessionStorage.getItem(recoveryKey) === data.session.user.id);
   setSession(data.session);
-  if (recovery) {
+  if (pendingEmailLink) {
+    recovery = false;
+    openAuth('confirm');
+  } else if (recovery) {
     announce('请设置新密码。');
     openAuth('reset');
-  } else if (emailLinkNotice && !session) openAuth('login', emailLinkNotice);
+  } else if (emailLinkNotice) openAuth('login', emailLinkNotice);
   client.auth.onAuthStateChange((event, next) => {
     if (event === 'INITIAL_SESSION') return;
     setTimeout(() => {
