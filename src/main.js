@@ -4,6 +4,7 @@ import './style.css';
 
 const url = import.meta.env.VITE_SUPABASE_URL;
 const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const managedAccounts = import.meta.env.VITE_MANAGED_ACCOUNTS === 'true';
 const client = url && key ? createClient(url, key, { auth: { detectSessionInUrl: false, flowType: 'pkce' } }) : null;
 const app = document.querySelector('#app');
 app.innerHTML = `
@@ -120,7 +121,7 @@ function makeBoard() {
 const board = makeBoard();
 function render() {
   accountButton.hidden = !client || recovery;
-  accountButton.textContent = session ? '退出' : '登录 / 注册';
+  accountButton.textContent = session ? '退出' : managedAccounts ? '登录' : '登录 / 注册';
   accountButton.disabled = authBusy;
   byId('account-label').textContent = recovery ? '密码重置' : session?.user.email ?? (client ? '' : '本机试用');
   refresh.hidden = !session || recovery;
@@ -248,7 +249,9 @@ window.addEventListener('focus', () => {
 });
 
 const authText = {
-  login: ['登录', '登录后打开你的个人记录。', '登录'],
+  login: ['登录', managedAccounts
+    ? '首批玩家请使用维护者提供的账号。开通账号或忘记密码时，请联系维护者。'
+    : '登录后打开你的个人记录。', '登录'],
   signup: ['注册', '验证邮箱后，即可开始记录。', '发送验证邮件'],
   forgot: ['找回密码', '我们会向注册邮箱发送重置链接。', '发送重置链接'],
   reset: ['设置新密码', '请输入至少 8 个字符的新密码。', '保存新密码']
@@ -270,7 +273,7 @@ function openAuth(mode, notice = '') {
   byId('close-auth').hidden = mode === 'reset';
   const links = byId('auth-links');
   links.replaceChildren();
-  const switches = mode === 'login' ? [['signup', '注册账号'], ['forgot', '忘记密码？']]
+  const switches = mode === 'login' ? (managedAccounts ? [] : [['signup', '注册账号'], ['forgot', '忘记密码？']])
     : mode === 'reset' ? [] : [['login', '返回登录']];
   for (const [next, label] of switches) {
     const button = document.createElement('button');

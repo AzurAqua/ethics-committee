@@ -3,6 +3,8 @@
 .env.*
 !.env.example
 !.env.*.example
+# Browser-only production configuration, validated by vite.config.js.
+!.env.production
 *.pem
 *.key
 /.local-secrets/
