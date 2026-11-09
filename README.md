@@ -4,6 +4,8 @@
 
 [打开网站](https://azuraqua.github.io/ethics-committee/) · [玩家使用说明](PLAYER-GUIDE.md) · [项目进度](PLAN.md)
 
+正式首版为 [v0.1.0](https://github.com/AzurAqua/ethics-committee/releases/tag/v0.1.0)。
+
 首批试用采用维护者预建账号。开通账号或忘记密码时，请联系维护者。邮件注册与自助找回暂未开放。
 
 ## 点击格子的规则
@@ -49,6 +51,6 @@ pnpm build
 
 ## 当前状态与反馈
 
-网页主体、云端保存、并发冲突和账号隔离已完成验证。独立入口已通过用户的中国大陆手机网络登录、保存及刷新实测，电脑新页面能读取手机进度。首批账号交付状态见 [PLAN.md](PLAN.md)。
+网页主体、云端保存、并发冲突和账号隔离已完成验证。独立入口已通过用户的中国大陆手机网络登录、保存及刷新实测，电脑新页面能读取手机进度。首批五份账号已开通并逐一通过登录、保存及隔离检查，详见 [PLAN.md](PLAN.md)。
 
 遇到问题可在 [Issues](https://github.com/AzurAqua/ethics-committee/issues) 中说明设备、浏览器、发生时间、页面提示和复现步骤。
