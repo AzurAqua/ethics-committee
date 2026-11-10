@@ -2,11 +2,11 @@
 
 《三角机构》TRPG 的个人轨道记录网站，包含职能、现实、异常三条轨道，以及「伦理委员会」扩展的人伦条。支持电脑与手机，每位玩家使用自己的账号记录进度。
 
-[打开网站](https://azuraqua.github.io/ethics-committee/) · [玩家使用说明](PLAYER-GUIDE.md) · [项目进度](PLAN.md)
+[打开公开版](https://azuraqua.github.io/ethics-committee-preview/) · [玩家使用说明](PLAYER-GUIDE.md) · [项目进度](PLAN.md)
 
-正式首版为 [v0.1.0](https://github.com/AzurAqua/ethics-committee/releases/tag/v0.1.0)。上述网站仍提供维护者预建账号的第一版。
+面向首批玩家的第一版为 [v0.1.0](https://github.com/AzurAqua/ethics-committee/releases/tag/v0.1.0)，继续提供维护者预建账号的独立入口。
 
-本分支 `feat/public-release` 正在开发公开版，增加邮箱自助注册、重发验证邮件、密码找回和页面内帮助，仍为每个账号一份记录。[打开公开版预览](https://azuraqua.github.io/ethics-committee-preview/)。预览使用独立后台，账号与记录和第一版分开。真实收信流程尚待验收，详见 [公开版验收](PUBLIC-ACCEPTANCE.md)。
+本分支 `feat/public-release` 的公开版已完成最小验收，支持邮箱自助注册、重发验证邮件、密码找回和页面内帮助，仍为每个账号一份记录。公开版使用独立后台，账号与记录和第一版分开；首批玩家继续使用[第一版入口](https://azuraqua.github.io/ethics-committee/)。验证范围与证据见 [公开版验收](PUBLIC-ACCEPTANCE.md)。
 
 ## 点击格子的规则
 
@@ -53,6 +53,6 @@ pnpm build
 
 ## 当前状态与反馈
 
-第一版已通过网页主体、云端保存、并发冲突和账号隔离验证，以及中国大陆手机网络实测。首批五份账号已开通。公开版尚在独立环境验收，两版进度分别记录在 [PLAN.md](PLAN.md)。
+第一版已交付给首批五位玩家。公开版已在独立环境通过真实账号接口、浏览器交互、注册收信、重发验证及密码重置验收。用户在中国大陆手机关闭 VPN 后完成跨设备邮件验证、保存刷新、旧密码失效和新密码登录；后台核对重置前后记录完全一致。两版进度分别记录在 [PLAN.md](PLAN.md)。
 
 遇到问题可在 [Issues](https://github.com/AzurAqua/ethics-committee/issues) 中说明设备、浏览器、发生时间、页面提示和复现步骤。
