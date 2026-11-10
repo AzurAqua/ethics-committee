@@ -14,7 +14,7 @@ body { margin: 0; }
 button, input { font: inherit; }
 button { cursor: pointer; }
 button:disabled, [aria-disabled="true"] { cursor: default; }
-button:focus-visible, input:focus-visible { outline: 2px solid #42651e; outline-offset: 3px; }
+button:focus-visible, input:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid #42651e; outline-offset: 3px; }
 p, h1, h2, h3 { margin: 0; }
 .masthead { border-bottom: 1px solid #dedbd1; background: #f8f6ef; }
 .mast-inner, .shell { width: min(1200px, calc(100% - 64px)); margin-inline: auto; }
@@ -103,6 +103,13 @@ dialog h2 { font-size: 24px; margin-bottom: 8px; }
 #auth input { min-width: 0; min-height: 41px; border: 1px solid #bfc5b8; border-radius: 6px; background: #fffef9; padding: 8px 10px; color: inherit; font-size: 16px; font-weight: 400; }
 .auth-submit { width: 100%; margin-top: 8px; }
 .auth-links { justify-content: flex-start; margin-top: 7px; }
+.preview-notice { margin-top: 14px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+a { color: #3d572e; text-underline-offset: 3px; }
+.help-panel { margin-top: 20px; border: 1px solid var(--line); border-radius: 9px; background: #fbfaf4; }
+.help-panel summary { padding: 14px 18px; cursor: pointer; font-size: 14px; font-weight: 700; }
+.help-content { padding: 0 18px 18px; color: var(--muted); font-size: 13px; line-height: 1.75; }
+.help-content h2 { margin-top: 12px; font-size: 14px; color: #252924; }
+.help-content p { margin: 6px 0 12px; }
 @media (max-width: 780px) {
   .mast-inner, .shell { width: calc(100% - 28px); }
   .tracks { grid-template-columns: minmax(0, 1fr); gap: 12px; }
