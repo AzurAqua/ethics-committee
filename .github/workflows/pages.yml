@@ -1,4 +1,4 @@
-name: Deploy website
+name: Publish website entry
 
 on:
   push:
@@ -33,11 +33,11 @@ jobs:
         run: |
           python scripts/verify.py
           pnpm test
-          pnpm build --base="/${{ github.event.repository.name }}/"
+          pnpm build --base="/ethics-committee-preview/"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: dist
+          path: legacy-entry
 
   deploy:
     if: github.ref == 'refs/heads/main'
