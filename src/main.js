@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { version as appVersion } from '../package.json';
 import { actions, applyAction, cellState, emptyRecord, legalActions, tracks } from './tracks.js';
 import { authErrorMessage, confirmEmailLink, readEmailLink, submitAuth } from './auth-flow.js';
 import './style.css';
@@ -31,7 +32,7 @@ app.innerHTML = `
         <circle cx="161" cy="124" r="5" class="dot" />
       </svg>
     </section>
-    <p class="preview-notice">公开版预览 · 每个账号暂时保留一份记录。<a href="https://azuraqua.github.io/ethics-committee/">首批玩家第一版入口</a></p>
+    <p class="preview-notice">公开版 v${appVersion} · 每个账号保留一份记录。<a href="https://azuraqua.github.io/ethics-committee/">首批玩家第一版入口</a></p>
     <section class="workspace" aria-label="进程轨道">
       <div class="board-bar">
         <div class="board-title"><span>01 /</span><h2>进程轨道</h2></div>
